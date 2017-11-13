@@ -1,20 +1,41 @@
 package a7;
 
+import java.util.ArrayList;
+
 public class ObservablePictureImpl implements ObservablePicture{
 
-    public ObservablePictureImpl(Picture p) {
+    //Declaration temporary Picture
+    protected Picture tempOP;
+    private ROIObserverDecorator decoratedObserver;
+    private ArrayList<Region> regionList;
+    private ArrayList<ROIObserverDecorator> observerList;
 
+    //Constructor
+    public ObservablePictureImpl(Picture p) {
+        tempOP = p;
     }
 
 
     @Override
     public void registerROIObserver(ROIObserver observer, Region r) {
-
+        decoratedObserver = new ROIObserverDecoratorImpl(observer, r);
+        observerList = new ArrayList<>();
+        observerList.add(decoratedObserver);
+        regionList = new ArrayList<>();
+        regionList.add(r);
     }
 
     @Override
     public void unregisterROIObservers(Region r) {
-
+        for (ROIObserverDecorator observer : observerList) {
+            for (Region observerRegion : observer.getRegions()) {
+                try {
+                    observerRegion.intersect(r);
+                    observer.removeRegion(r);
+                } catch (NoIntersectionException e) {
+                }
+            }
+        }
     }
 
     @Override
