@@ -40,12 +40,19 @@ public class ObservablePictureImpl implements ObservablePicture{
 
     @Override
     public void unregisterROIObserver(ROIObserver observer) {
-
+        observerList.remove(observer);
     }
 
     @Override
     public ROIObserver[] findROIObservers(Region r) {
-        return new ROIObserver[0];
+        ArrayList<ROIObserver> ObserverList = new ArrayList<>();
+        for (ROIObserverDecorator decObserver : observerList) {
+            if (decObserver.observerIntersects(r)) {
+                ObserverList.add(decObserver.getObserver());
+            }
+        }
+        ROIObserver[] tempArray = ObserverList.toArray(new ROIObserver[ObserverList.size()]);
+        return tempArray;
     }
 
     @Override
@@ -65,36 +72,44 @@ public class ObservablePictureImpl implements ObservablePicture{
 
     @Override
     public int getHeight() {
-        return 0;
+        return tempOP.getHeight();
     }
 
     @Override
     public Pixel getPixel(int x, int y) {
-        return null;
+        return tempOP.getPixel(x, y);
     }
 
     @Override
     public Pixel getPixel(Coordinate c) {
-        return null;
+        return tempOP.getPixel(c);
     }
 
     @Override
     public void setPixel(int x, int y, Pixel p) {
+        tempOP.setPixel(x,y,p);
+        Coordinate tempCoordinate = new Coordinate(x,y);
+        Region tempRegion = new RegionImpl(tempCoordinate, tempCoordinate);
+
 
     }
 
     @Override
     public void setPixel(Coordinate c, Pixel p) {
-
+        tempOP.setPixel(c,p);
+        Region tempRegion = new RegionImpl(c,c);
+        for(ROIObserver observer : findROIObservers(tempRegion)) {
+            observer.notify(this, tempRegion);
+        }
     }
 
     @Override
     public SubPicture extract(int xoff, int yoff, int width, int height) {
-        return null;
+        return tempOP.extract(xoff,yoff,width,height);
     }
 
     @Override
     public SubPicture extract(Coordinate a, Coordinate b) {
-        return null;
+        return tempOP.extract(a,b);
     }
 }

@@ -12,8 +12,13 @@ public class ROIObserverDecoratorImpl implements ROIObserverDecorator{
     //constructor
     public ROIObserverDecoratorImpl(ROIObserver observer, Region region) {
         tempObserver = observer;
-        regions = new ArrayList<Region>();
+        regions = new ArrayList<>();
         regions.add(region);
+    }
+
+    //returns basic ROIObserver
+    public ROIObserver getObserver() {
+        return tempObserver;
     }
 
 
@@ -32,9 +37,19 @@ public class ROIObserverDecoratorImpl implements ROIObserverDecorator{
         return regions;
     }
 
+    public boolean observerIntersects(Region r) {
+        for (Region region : regions) {
+            try {
+                region.intersect(r);
+                return true;
+            } catch (NoIntersectionException e) {
+            }
+        } return false;
+    }
+
 
     @Override
     public void notify(ObservablePicture picture, Region changed_region) {
-
+        tempObserver.notify(picture, changed_region);
     }
 }
