@@ -90,6 +90,9 @@ public class RegionImpl implements Region{
         if (other == null) {
             return this;
         }
+        if (this == null) {
+            return other;
+        }
 
         // determines integer values of union region
         tempLeft = Math.min(this.getLeft(), other.getLeft());

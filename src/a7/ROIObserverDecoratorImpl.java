@@ -37,7 +37,19 @@ public class ROIObserverDecoratorImpl implements ROIObserverDecorator{
         return regions;
     }
 
-    public boolean observerIntersects(Region r) {
+    public int howManyIntersectedROI(Region r) {
+        int num = 0;
+        for (Region region : regions) {
+            try {
+                region.intersect(r);
+                num++;
+            } catch (NoIntersectionException e) {
+            }
+        }
+        return num;
+    }
+
+    public boolean hasRegion(Region r) {
         for (Region region : regions) {
             try {
                 region.intersect(r);
@@ -45,6 +57,10 @@ public class ROIObserverDecoratorImpl implements ROIObserverDecorator{
             } catch (NoIntersectionException e) {
             }
         } return false;
+    }
+
+    public void removeAllRegions() {
+        regions.clear();
     }
 
 
